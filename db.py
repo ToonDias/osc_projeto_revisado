@@ -18,12 +18,12 @@ db_host = os.getenv("DB_HOST")
 # print(db_host)
 
 connection = psycopg2.connect(
-                                dbname = db_nome,
-                                user = db_user,
-                                password = db_senha,
-                                host = db_host,
-                                port = db_port
-                            )
+    dbname = db_nome,
+    user = db_user,
+    password = db_senha,
+    host = db_host,
+    port = db_port
+    )
 
 connection.autocommit = True
 
@@ -92,7 +92,7 @@ try:
     cursor.execute("alter table tb_oscar add column location text")
     print("Coluna location adicionada com sucesso!")
 except psycopg2.errors.DuplicateColumn:
-    print("Colula location já existe!")
+    print("Coluna location já existe!")
 
 cursor.close()
 connection.close()
