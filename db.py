@@ -70,7 +70,7 @@ except psycopg2.errors.DuplicateTable:
     print("Tabeça tb_caregory já existe!")
 
 try:
-    cursor.execute("create table tb_oscar (id bigserial not null, ceremony int not null, year int not null)")
+    cursor.execute("create table tb_oscar (id bigserial not null, ceremony int not null, year int not null, primary key (id), unique (ceremony))")
     print("Tabela tb_oscar criada com sucesso!")
 except psycopg2.errors.DuplicateTable:
     print("Tabela tb_oscar já existe!")

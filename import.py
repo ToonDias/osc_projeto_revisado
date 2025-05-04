@@ -50,7 +50,7 @@ with CAMINHO_CSV.open('r', encoding='utf-8') as arquivo:
     
 lista_class_unique = [item for item in sorted(list(set(list_class))) if item]
 lista_category_unique = [item for item in sorted(list(set(list_category))) if item]
-list_oscar_unique = [item for item in sorted(list(set(list_oscar))) if all(item)]    
+lista_oscar_unique = [item for item in sorted(list(set(list_oscar))) if all(item)]    
 lista_movie_unique = [item for item in sorted(list(set(list_movie))) if all(item)]
 
 connection = psycopg2.connect(
@@ -86,3 +86,9 @@ for item in lista_movie_unique:
     except psycopg2.errors.UniqueViolation:
         print("Registro já existe!")
 
+for item in lista_oscar_unique:
+    try:
+        cursor.execute("insert into tb_oscar (ceremony, year, location) values (%s, %s, %s)", item)
+        print("Oscar adicionada com sucesso!")
+    except psycopg2.errors.UniqueViolation:
+        print("Registro já existe!")
