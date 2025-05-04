@@ -48,11 +48,34 @@ with CAMINHO_CSV.open('r', encoding='utf-8') as arquivo:
                 linha['Movie Code'].strip().replace('\n', '').replace('\r', '')
             ))
     
-list_oscar_unique = [item for item in sorted(list(set(list_oscar))) if all(item)]    
 lista_class_unique = [item for item in sorted(list(set(list_class))) if item]
+list_oscar_unique = [item for item in sorted(list(set(list_oscar))) if all(item)]    
 lista_category_unique = [item for item in sorted(list(set(list_category))) if item]
 lista_movie_unique = [item for item in sorted(list(set(list_movie))) if all(item)]
 
-print(len(list_oscar_unique))
-for o in list_oscar_unique:
-    print(o)
+connection = psycopg2.connect(
+    dbname = 'db_oscar',
+    user = db_user,
+    password = db_senha,
+    port = db_port,
+    host = db_host
+)
+
+connection.autocommit = True
+
+cursor = connection.cursor()
+
+for item in lista_class_unique:
+    try:
+        cursor.execute("insert into tb_class (description) values (%s)", (item,))
+        print("Classe adicionada com sucesso!")
+    except psycopg2.errors.UniqueViolation:
+        print("Registro já existe!")
+
+for item in lista_class_unique:
+    try:
+        cursor.execute("insert into tb_class (description) values (%s)", (item,))
+        print("Classe adicionada com sucesso!")
+    except psycopg2.errors.UniqueViolation:
+        print("Registro já existe!")
+
