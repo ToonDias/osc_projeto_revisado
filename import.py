@@ -79,3 +79,10 @@ for item in lista_category_unique:
     except psycopg2.errors.UniqueViolation:
         print("Registro já existe!")
 
+for item in lista_movie_unique:
+    try:
+        cursor.execute("insert into tb_movie (title, code) values (%s, %s)", item)
+        print("Filme adicionada com sucesso!")
+    except psycopg2.errors.UniqueViolation:
+        print("Registro já existe!")
+
