@@ -35,7 +35,7 @@ with CAMINHO_CSV.open('r', encoding='utf-8') as arquivo:
     for linha in linhas:
         list_oscar.append((
                 int(linha['Ceremony'].strip().replace('\n', '').replace('\r', '')), 
-                int(linha['Year'][:4].strip().replace('\n', '').replace('\r', '')), 
+                int(linha['Year'].strip().replace('\n', '').replace('\r', '')),
                 re.sub(r'^\d+\s+', '',linha['Location'].strip().replace('\n', '').replace('\r', ''))
             ))
         
