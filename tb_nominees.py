@@ -4,7 +4,6 @@ import psycopg2
 import csv
 import os
 
-
 load_dotenv()
 
 db_name  = 'db_oscar'
@@ -12,12 +11,6 @@ db_senha = os.getenv('DB_SENHA')
 db_user = os.getenv('DB_USER')
 db_host = os.getenv('DB_HOST')
 db_port = os.getenv('DB_PORT')
-
-# print(db_name)
-# print(db_senha)
-# print(db_user)
-# print(db_port)
-# print(db_host)
 
 connection = psycopg2.connect(
     dbname = db_name,
@@ -42,55 +35,54 @@ all_oscar = cursor.fetchall()
 cursor.execute('select * from tb_movie;')
 all_movie = cursor.fetchall()
 
-# print(all_class)
-# print(all_category)
-# print(all_oscar)
-# print(all_movie)
-
-CAMINHO_CSV =   Path(__file__).parent / 'base/datasheet_oscars_complementar.csv'
+CAMINHO_CSV = Path(__file__).parent / 'base/datasheet_oscars_complementar.csv'
 
 with CAMINHO_CSV.open('r', encoding='utf-8') as arquivo:
     leitor = csv.DictReader(arquivo, delimiter='\t')
     linhas = list(leitor)
 
-    list_ceremony = []
-    list_class = []
-    list_category = []
-    list_movie = []
-    list_outros = []
+    linhas_invalidas_obg = []
+    linhas_invalidas_nsc = []
+    linhas_validas = []
 
-    for linha in linhas[:2]:
-        list_ceremony.append(int(linha['Ceremony'].strip().replace('\n', '').replace('\r', '')))
-        list_class.append(linha['Class'].strip().replace('\n', '').replace('\r', ''))
-        list_category.append(linha['Category'].strip().replace('\n', '').replace('\r', ''))
-        list_movie.append(linha['Movie'].strip().replace('\n', '').replace('\r', ''))
-        list_outros.append((
-            linha['Name'].strip().replace('\n', '').replace('\r', '') if linha['Name'] else 'NF',
-            linha['Nominees'].strip().replace('\n', '').replace('\r', '') if linha['Nominees'] else 'NF',
-            True if linha['Winner'] else False,
-            linha['Note'].strip().replace('\n', '').replace('\r', '') if linha['Note'] else 'NF'
+    for linha in linhas:
+        if not linha['Ceremony'] and not linha['Year'] or not linha['Class'] or not linha['Category']  or not linha['Movie']:
+            linhas_invalidas_obg.append(linha)
+            continue
+        elif not linha['Name'] or not linha['Nominees']:
+            linhas_invalidas_nsc.append(linha)
+            continue
+        else:
+            linhas_validas.append(linha)
+
+lista_dados = []
+
+for linha in linhas_validas:
+        Ceremony = int(str(linha['Ceremony']).strip().replace('\n', '').replace('\r', ''))
+        Year = int(str(linha['Year']).strip().replace('\n', '').replace('\r', ''))
+        Class  = str(linha['Class']).strip().replace('\n', '').replace('\r', '')
+        Category = str(linha['Category']).strip().replace('\n', '').replace('\r', '')
+        Movie  = str(linha['Movie']).strip().replace('\n', '').replace('\r', '')
+        Name = str(linha['Name']).strip().replace('\n', '').replace('\r', '') if linha['Name'] else 'NF'
+        Nominees = str(linha['Nominees']).strip().replace('\n', '').replace('\r', '') if linha['Nominees'] else 'NF'
+        Winner =   True if linha['Winner'] else False
+        Detail = str(linha['Detail']).strip().replace('\n', '').replace('\r', '') if linha['Detail'] else 'NF'
+        Note = str(linha['Note']).strip().replace('\n', '').replace('\r', '') if linha['Note'] else 'NF'
+
+        lista_dados.append((
+            next((item[0] for item in all_oscar if Ceremony == item[1] or Year == item[2]), None),
+            next((item[0] for item in all_class if Class == item[1]), None),
+            next((item[0] for item in all_category if Category == item[1]), None),
+            next((item[0] for item in all_movie if Movie == item[1]), None),
+            Name,
+            Nominees,
+            Winner,
+            Detail,
+            Note
         ))
 
+cursor.executemany('insert into tb_nominees (oscar_id, class_id, category_id, movie_id, name, nominees, winner, detail, note) values (%s,%s,%s,%s,%s,%s,%s,%s,%s)', lista_dados)
 
-for i in list_class:
-    print(i)
-
-print('-----------------')
-
-for i in list_ceremony:
-    print(i)
-
-print('-----------------')
-
-for i in list_category:
-    print(i)
-
-print('-----------------')
-
-for i in list_movie:
-    print(i)
-
-print('-----------------')
-
-for i in list_outros:
-    print(i)
+print('Registros adicionado a tabela tb_nominnes com sucesso!')
+cursor.close()
+connection.close()

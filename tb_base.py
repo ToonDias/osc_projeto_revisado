@@ -7,21 +7,13 @@ import re
 
 load_dotenv()
 
-db_name = os.getenv('DB_nome')
+db_name = 'db_oscar'
 db_user = os.getenv('DB_USER')
 db_senha = os.getenv('DB_SENHA')
 db_port = os.getenv('DB_PORT')
 db_host  = os.getenv('DB_HOST')
 
-# print(db_name)
-# print(db_senha)
-# print(db_user)
-# print(db_port)
-# print(db_host)
-
 CAMINHO_CSV = Path(__file__).parent / 'base/datasheet_oscars_complementar.csv'
-
-# print(CAMINHO_CSV)
 
 with CAMINHO_CSV.open('r', encoding='utf-8') as arquivo:
     leitor = csv.DictReader(arquivo, delimiter='\t')
@@ -54,7 +46,7 @@ lista_oscar_unique = [item for item in sorted(list(set(list_oscar))) if all(item
 lista_movie_unique = [item for item in sorted(list(set(list_movie))) if all(item)]
 
 connection = psycopg2.connect(
-    dbname = 'db_oscar',
+    dbname = db_name,
     user = db_user,
     password = db_senha,
     port = db_port,
@@ -92,3 +84,6 @@ for item in lista_oscar_unique:
         print("Oscar adicionada com sucesso!")
     except psycopg2.errors.UniqueViolation:
         print("Registro já existe!")
+
+cursor.close()
+connection.close()

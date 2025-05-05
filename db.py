@@ -10,12 +10,6 @@ db_senha = os.getenv("DB_SENHA")
 db_port = os.getenv("DB_PORT")
 db_host = os.getenv("DB_HOST")
 
-# print(db_nome)
-# print(db_user)
-# print(db_senha)
-# print(db_port)
-# print(db_host)
-
 connection = psycopg2.connect(
     dbname = db_nome,
     user = db_user,
@@ -75,8 +69,9 @@ except psycopg2.errors.DuplicateTable:
     print("Tabela tb_oscar já existe!")
 
 try:
-    cursor.execute("create table tb_nominees (id bigserial not null, ceremony_id bigint not null, class_id bigint not null," \
-    "category_id bigint not null, movie_id bigint not null, detail text, note text, primary key (id))")
+    cursor.execute("create table tb_nominees (id bigserial not null, oscar_id bigint not null, class_id bigint not null," \
+    "category_id bigint not null, movie_id bigint not null, name varchar(500), nominees varchar(500), winner boolean not null," \
+    "detail text, note text, primary key (id))")
     print("Tabela tb_nominees criada com sucesso!")
 except psycopg2.errors.DuplicateTable:
     print("Tabela tb_nominees já existe!")
