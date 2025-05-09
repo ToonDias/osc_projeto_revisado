@@ -49,9 +49,10 @@ cursor.execute("""
 
 resultado3 = cursor.fetchall()
 
+cursor.close()
+connection.close()
 
 # Exportando resultados em .txt
-
 caminho_arquivo_txt = Path(__file__).parent / 'relatorios/questao_1.txt'
 
 with open(caminho_arquivo_txt, mode='w', encoding='utf-8') as file:
@@ -64,7 +65,7 @@ caminho_arquivo_txt = Path(__file__).parent / 'relatorios/questao_2.txt'
 with open(caminho_arquivo_txt, mode='w', encoding='utf-8') as file:
     file.write("Categorias que 'Interstellar' venceu:\n")
     for category, year, ceremony in resultado2:
-     file.write(f"Categoria: {category} - Ano: {year} - Cerimonia: {ceremony}\n")
+        file.write(f"Categoria: {category} - Ano: {year} - Cerimonia: {ceremony}\n")
 
 caminho_arquivo_txt = Path(__file__).parent / 'relatorios/questao_3.txt'
 
